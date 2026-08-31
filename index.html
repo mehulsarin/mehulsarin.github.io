@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mehul — Mechanical Engineering Portfolio</title>
+<meta name="description" content="Mechanical engineering student at McMaster University — projects, skills, and experience.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --paper: #F1EFE6;
+  --paper-dim: #E9E5D6;
+  --hair: #D9D4C2;
+  --ink: #14263D;
+  --ink-soft: #52627A;
+  --ink-faint: #8C97A8;
+  --line: #1B3350;
+  --accent: #F2660D;
+  --accent-ink: #B84D00;
+  --white: #FBFAF5;
+  --font-display: 'Oswald', sans-serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --max-w: 920px;
+  --gutter: clamp(20px, 6vw, 64px);
+  --ruler-w: 34px;
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{
+  font-family:var(--font-display);
+  color:var(--ink);
+  margin:0;
+  line-height:1.1;
+}
+p{ margin:0 0 1em; color:var(--ink-soft); max-width:62ch; }
+a{ color:var(--accent-ink); }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:3px;
+}
+.mono{ font-family:var(--font-mono); }
+.label{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+}
+
+/* ============================================================
+   PAGE FRAME — drafting-sheet border with corner zone ticks
+   ============================================================ */
+.frame{
+  position:fixed;
+  inset:10px;
+  border:1.5px solid var(--line);
+  pointer-events:none;
+  z-index:2;
+  opacity:.5;
+}
+@media (max-width: 780px){ .frame{ display:none; } }
+
+/* Vertical zone ruler — functional scrollspy indicator */
+.ruler{
+  position:fixed;
+  left:10px;
+  top:10px;
+  bottom:10px;
+  width:var(--ruler-w);
+  border-right:1.5px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  z-index:3;
+}
+@media (max-width: 780px){ .ruler{ display:none; } }
+.ruler__zone{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--ink-faint);
+  border-bottom:1px solid var(--hair);
+  transition:color .25s ease, background .25s ease;
+}
+.ruler__zone:last-child{ border-bottom:none; }
+.ruler__zone.is-active{
+  color:var(--white);
+  background:var(--line);
+}
+
+/* ============================================================
+   LAYOUT SHELL
+   ============================================================ */
+.shell{
+  margin-left:0;
+  padding-left:calc(var(--ruler-w) + 10px);
+}
+@media (max-width: 780px){ .shell{ padding-left:0; } }
+
+.wrap{
+  max-width:var(--max-w);
+  margin:0 auto;
+  padding:0 var(--gutter);
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:rgba(241,239,230,.92);
+  backdrop-filter:blur(6px);
+  border-bottom:1.5px solid var(--line);
+}
+.nav__inner{
+  max-width:var(--max-w);
+  margin:0 auto;
+  padding:14px var(--gutter);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+}
+.nav__mark{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:18px;
+  letter-spacing:.02em;
+  color:var(--ink);
+  text-decoration:none;
+  white-space:nowrap;
+}
+.nav__mark span{ color:var(--accent-ink); }
+.nav__links{
+  display:flex;
+  gap:22px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.nav__links::-webkit-scrollbar{ display:none; }
+.nav__link{
+  font-family:var(--font-mono);
+  font-size:12px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  text-decoration:none;
+  color:var(--ink-soft);
+  white-space:nowrap;
+  padding:4px 0;
+  border-bottom:2px solid transparent;
+  transition:color .2s ease, border-color .2s ease;
+}
+.nav__link:hover{ color:var(--ink); }
+.nav__link.is-active{
+  color:var(--accent-ink);
+  border-bottom-color:var(--accent);
+}
+
+/* ============================================================
+   SHEET — shared section wrapper (drawing-sheet convention)
+   ============================================================ */
+.sheet{
+  padding:72px 0;
+  border-bottom:1.5px solid var(--line);
+}
+.sheet:last-of-type{ border-bottom:none; }
+.sheet__head{
+  display:flex;
+  align-items:baseline;
+  gap:14px;
+  margin-bottom:36px;
+}
+.sheet__num{
+  font-family:var(--font-mono);
+  font-size:13px;
+  color:var(--accent-ink);
+  border:1px solid var(--accent-ink);
+  padding:2px 7px;
+}
+.sheet__title{
+  font-size:clamp(22px,3vw,30px);
+  font-weight:600;
+}
+
+/* ============================================================
+   HERO / TITLE BLOCK
+   ============================================================ */
+.hero{
+  padding-top:56px;
+}
+.hero__grid{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:40px;
+  align-items:center;
+}
+@media (max-width:780px){
+  .hero__grid{ grid-template-columns:1fr; }
+}
+.hero__eyebrow{
+  font-family:var(--font-mono);
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  margin-bottom:14px;
+}
+.hero__name{
+  font-size:clamp(46px,9vw,84px);
+  font-weight:700;
+  letter-spacing:-.01em;
+  margin-bottom:10px;
+}
+.hero__role{
+  font-size:clamp(17px,2.2vw,20px);
+  color:var(--ink-soft);
+  font-weight:500;
+  max-width:46ch;
+  margin-bottom:28px;
+}
+.hero__cta{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--font-mono);
+  font-size:12px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  text-decoration:none;
+  padding:11px 18px;
+  border:1.5px solid var(--line);
+  color:var(--ink);
+  transition:background .2s ease, color .2s ease, border-color .2s ease;
+}
+.btn--solid{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:var(--white);
+}
+.btn--solid:hover{ background:var(--accent-ink); border-color:var(--accent-ink); }
+.btn--ghost:hover{ border-color:var(--accent-ink); color:var(--accent-ink); }
+
+/* title block table under hero (real drafting title-block fields) */
+.titleblock{
+  margin-top:44px;
+  border:1.5px solid var(--line);
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+}
+@media (max-width:560px){ .titleblock{ grid-template-columns:repeat(2,1fr); } }
+.titleblock__cell{
+  padding:10px 14px;
+  border-right:1px solid var(--hair);
+  border-bottom:1px solid var(--hair);
+}
+.titleblock__cell:nth-child(4n){ border-right:none; }
+.titleblock__k{
+  display:block;
+  font-family:var(--font-mono);
+  font-size:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  margin-bottom:3px;
+}
+.titleblock__v{
+  font-family:var(--font-mono);
+  font-size:13px;
+  color:var(--ink);
+}
+
+/* hero SVG */
+.hero__art{
+  display:flex;
+  justify-content:center;
+}
+.hero__art svg{ width:100%; max-width:320px; height:auto; }
+.gear-shape{ fill:none; stroke:var(--line); stroke-width:2; }
+.gear-tooth{ fill:none; stroke:var(--line); stroke-width:2; }
+.dim-line{ fill:none; stroke:var(--accent-ink); stroke-width:1.5; }
+.dim-tick{ fill:none; stroke:var(--accent-ink); stroke-width:1.5; }
+.dim-text{
+  font-family:var(--font-mono);
+  font-size:11px;
+  fill:var(--accent-ink);
+  opacity:0;
+  animation:fadeIn .5s ease forwards;
+  animation-delay:1.5s;
+}
+.draw{
+  stroke-dasharray:100;
+  stroke-dashoffset:100;
+  animation:draw .7s ease-out forwards;
+  animation-delay:var(--d,0s);
+}
+@keyframes draw{ to{ stroke-dashoffset:0; } }
+@keyframes fadeIn{ to{ opacity:1; } }
+@media (prefers-reduced-motion: reduce){
+  .draw{ animation:none; stroke-dashoffset:0; }
+  .dim-text{ animation:none; opacity:1; }
+}
+
+/* ============================================================
+   ABOUT — general notes block
+   ============================================================ */
+.notes{
+  list-style:none;
+  margin:0;
+  padding:0;
+  counter-reset:note;
+  max-width:64ch;
+}
+.notes li{
+  counter-increment:note;
+  position:relative;
+  padding-left:34px;
+  margin-bottom:16px;
+  color:var(--ink-soft);
+}
+.notes li::before{
+  content:counter(note);
+  position:absolute;
+  left:0;
+  top:1px;
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--accent-ink);
+  border:1px solid var(--accent-ink);
+  width:20px;
+  height:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* ============================================================
+   BOM TABLE (skills)
+   ============================================================ */
+.bom{
+  width:100%;
+  border-collapse:collapse;
+}
+.bom caption{ text-align:left; margin-bottom:14px; }
+.bom th, .bom td{
+  text-align:left;
+  padding:11px 14px;
+  border-bottom:1px solid var(--hair);
+  vertical-align:top;
+}
+.bom thead th{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  border-bottom:1.5px solid var(--line);
+}
+.bom td.item{ font-family:var(--font-mono); color:var(--accent-ink); width:48px; }
+.bom td.name{ font-weight:500; }
+.bom td.cat{ color:var(--ink-soft); white-space:nowrap; }
+.bom td.note{ color:var(--ink-soft); font-size:14px; }
+.bom tbody tr:hover{ background:var(--paper-dim); }
+
+@media (max-width:640px){
+  .bom thead{ display:none; }
+  .bom, .bom tbody, .bom tr, .bom td{ display:block; width:100%; }
+  .bom tr{ padding:12px 0; border-bottom:1px solid var(--hair); }
+  .bom td{ border:none; padding:2px 0; }
+  .bom td.note::before{ content:"Note — "; color:var(--ink-faint); }
+}
+
+/* ============================================================
+   PROJECTS
+   ============================================================ */
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:32px;
+}
+.chip{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  background:none;
+  border:1px solid var(--line);
+  color:var(--ink-soft);
+  padding:7px 13px;
+  cursor:pointer;
+  transition:background .2s ease, color .2s ease, border-color .2s ease;
+}
+.chip:hover{ border-color:var(--accent-ink); color:var(--accent-ink); }
+.chip.is-active{
+  background:var(--line);
+  border-color:var(--line);
+  color:var(--white);
+}
+
+.projects{ display:flex; flex-direction:column; gap:22px; }
+.project{
+  border:1.5px solid var(--line);
+  background:var(--white);
+}
+.project__head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:20px;
+  padding:20px 22px;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.project__id{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--ink-faint);
+  display:block;
+  margin-bottom:6px;
+}
+.project__title{
+  font-family:var(--font-display);
+  font-size:19px;
+  font-weight:600;
+  margin-bottom:8px;
+}
+.project__summary{ margin:0; font-size:14.5px; }
+.project__tags{ display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+.tag{
+  font-family:var(--font-mono);
+  font-size:10px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  border:1px solid var(--hair);
+  padding:3px 8px;
+}
+.project__status{
+  font-family:var(--font-mono);
+  font-size:10px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:var(--accent-ink);
+  white-space:nowrap;
+  padding-top:2px;
+}
+.project__toggle{
+  background:none;
+  border:1px solid var(--line);
+  width:30px;
+  height:30px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  color:var(--ink);
+  font-size:16px;
+  transition:transform .25s ease, background .2s ease;
+}
+.project.is-open .project__toggle{ transform:rotate(45deg); background:var(--paper-dim); }
+
+.project__body{
+  display:grid;
+  grid-template-rows:0fr;
+  transition:grid-template-rows .3s ease;
+}
+.project.is-open .project__body{ grid-template-rows:1fr; }
+.project__body-inner{ overflow:hidden; }
+.project__detail{
+  padding:0 22px 22px;
+  border-top:1px solid var(--hair);
+  margin-top:2px;
+}
+.project__detail ul{ margin:14px 0; padding-left:20px; }
+.project__detail li{ color:var(--ink-soft); margin-bottom:8px; font-size:14.5px; }
+.project__meta{
+  display:flex;
+  gap:32px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+.project__meta div .label{ display:block; margin-bottom:4px; }
+.project__meta div span{ font-size:14px; color:var(--ink); }
+
+/* ============================================================
+   REVISION TABLE (experience)
+   ============================================================ */
+.rev{
+  width:100%;
+  border-collapse:collapse;
+}
+.rev th, .rev td{
+  text-align:left;
+  padding:12px 14px;
+  border-bottom:1px solid var(--hair);
+}
+.rev thead th{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  border-bottom:1.5px solid var(--line);
+}
+.rev td.rev-id{
+  font-family:var(--font-mono);
+  color:var(--white);
+  background:var(--line);
+  width:34px;
+  text-align:center;
+  font-size:13px;
+}
+.rev td.rev-date{ color:var(--ink-soft); white-space:nowrap; font-family:var(--font-mono); font-size:13px; }
+.rev td.rev-note{ color:var(--ink-soft); font-size:14px; }
+
+@media (max-width:640px){
+  .rev thead{ display:none; }
+  .rev, .rev tbody, .rev tr, .rev td{ display:block; width:100%; }
+  .rev tr{ padding:14px 0; border-bottom:1px solid var(--hair); position:relative; }
+  .rev td{ border:none; padding:2px 0 2px 44px; }
+  .rev td.rev-id{
+    position:absolute; left:0; top:14px; width:28px; height:28px; padding:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+}
+
+/* ============================================================
+   CONTACT — sign-off block
+   ============================================================ */
+.signoff{
+  border:1.5px solid var(--line);
+  padding:32px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:26px;
+}
+@media (max-width:640px){ .signoff{ grid-template-columns:1fr; } }
+.signoff__field{ border-bottom:1px solid var(--hair); padding-bottom:10px; }
+.signoff__field a{
+  font-family:var(--font-mono);
+  font-size:15px;
+  color:var(--ink);
+  text-decoration:none;
+  border-bottom:1px solid var(--accent);
+}
+.signoff__field a:hover{ color:var(--accent-ink); }
+
+footer{
+  padding:26px var(--gutter);
+  max-width:var(--max-w);
+  margin:0 auto;
+}
+footer p{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--ink-faint);
+  margin:0;
+}
+</style>
+</head>
+<body>
+
+<div class="frame" aria-hidden="true"></div>
+<nav class="ruler" aria-hidden="true" id="ruler">
+  <div class="ruler__zone" data-zone="hero">—</div>
+  <div class="ruler__zone" data-zone="about">B</div>
+  <div class="ruler__zone" data-zone="skills">C</div>
+  <div class="ruler__zone" data-zone="projects">D</div>
+  <div class="ruler__zone" data-zone="experience">E</div>
+  <div class="ruler__zone" data-zone="contact">F</div>
+</nav>
+
+<div class="shell">
+
+  <div class="nav">
+    <div class="nav__inner">
+      <a href="#hero" class="nav__mark">MEHUL<span>.</span></a>
+      <div class="nav__links" id="navLinks">
+        <a class="nav__link" data-zone="about" href="#about">About</a>
+        <a class="nav__link" data-zone="skills" href="#skills">Skills</a>
+        <a class="nav__link" data-zone="projects" href="#projects">Projects</a>
+        <a class="nav__link" data-zone="experience" href="#experience">Experience</a>
+        <a class="nav__link" data-zone="contact" href="#contact">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- HERO -->
+    <section class="sheet hero" id="hero">
+      <div class="hero__grid">
+        <div>
+          <div class="hero__eyebrow">Mechanical Engineering — McMaster University</div>
+          <h1 class="hero__name">Mehul</h1>
+          <p class="hero__role">Second-year mechanical engineering student building toward mechanical design roles in motorsport — with an eye on aerospace too.</p>
+          <div class="hero__cta">
+            <a href="#projects" class="btn btn--solid">View projects</a>
+            <a href="mailto:youremail@mcmaster.ca" class="btn btn--ghost">Get in touch</a>
+          </div>
+
+          <div class="titleblock">
+            <div class="titleblock__cell">
+              <span class="titleblock__k">Program</span>
+              <span class="titleblock__v">Mech. Eng, Year 2</span>
+            </div>
+            <div class="titleblock__cell">
+              <span class="titleblock__k">Focus</span>
+              <span class="titleblock__v">Design / Motorsport</span>
+            </div>
+            <div class="titleblock__cell">
+              <span class="titleblock__k">Status</span>
+              <span class="titleblock__v">CSWA in progress</span>
+            </div>
+            <div class="titleblock__cell">
+              <span class="titleblock__k">Sheet</span>
+              <span class="titleblock__v" id="sheetDate">1 of 1</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__art">
+          <svg viewBox="0 0 320 320" role="img" aria-label="Line illustration of a mechanical gear with a dimension callout">
+            <g id="teeth"></g>
+            <circle class="gear-shape draw" style="--d:0s" cx="160" cy="160" r="90" pathLength="100"/>
+            <circle class="gear-shape draw" style="--d:.25s" cx="160" cy="160" r="45" pathLength="100"/>
+            <circle class="gear-shape draw" style="--d:.45s" cx="160" cy="160" r="14" pathLength="100"/>
+            <line class="dim-tick draw" style="--d:1.05s" x1="55" y1="250" x2="55" y2="272" pathLength="100"/>
+            <line class="dim-tick draw" style="--d:1.05s" x1="265" y1="250" x2="265" y2="272" pathLength="100"/>
+            <line class="dim-line draw" style="--d:1.1s" x1="55" y1="264" x2="265" y2="264" pathLength="100"/>
+            <text class="dim-text" x="160" y="292" text-anchor="middle">&#8960; 180</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="sheet" id="about">
+      <div class="sheet__head">
+        <span class="sheet__num">ZONE B</span>
+        <h2 class="sheet__title">General notes</h2>
+      </div>
+      <ol class="notes">
+        <li>Second-year Mechanical Engineering student at McMaster University.</li>
+        <li>Working toward mechanical design roles in motorsport, with an eye on aerospace as well.</li>
+        <li>Background spans CAD, embedded systems, sensor integration, motor control, and numerical methods in MATLAB and Python.</li>
+        <li>Comfortable moving between a CAD workstation, a breadboard, and — lately — a Python script.</li>
+        <li>Currently working toward a SolidWorks Certified Associate (CSWA) credential and applying to McMaster's student aerospace design team.</li>
+      </ol>
+    </section>
+
+    <!-- SKILLS -->
+    <section class="sheet" id="skills">
+      <div class="sheet__head">
+        <span class="sheet__num">ZONE C</span>
+        <h2 class="sheet__title">Bill of materials — skills</h2>
+      </div>
+      <table class="bom">
+        <caption class="label">Tools and methods, by category</caption>
+        <thead>
+          <tr><th>Item</th><th>Skill</th><th>Category</th><th>Note</th></tr>
+        </thead>
+        <tbody id="bomBody"></tbody>
+      </table>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="sheet" id="projects">
+      <div class="sheet__head">
+        <span class="sheet__num">ZONE D</span>
+        <h2 class="sheet__title">Project drawings</h2>
+      </div>
+      <div class="chips" id="chips"></div>
+      <div class="projects" id="projectList"></div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section class="sheet" id="experience">
+      <div class="sheet__head">
+        <span class="sheet__num">ZONE E</span>
+        <h2 class="sheet__title">Revision history — experience</h2>
+      </div>
+      <table class="rev">
+        <thead>
+          <tr><th>Rev</th><th>Description</th><th>Date</th><th>Note</th></tr>
+        </thead>
+        <tbody id="revBody"></tbody>
+      </table>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="sheet" id="contact">
+      <div class="sheet__head">
+        <span class="sheet__num">ZONE F</span>
+        <h2 class="sheet__title">Sign-off</h2>
+      </div>
+      <p style="margin-bottom:28px;">Open to co-op terms, undergrad research, and motorsport / mechanical design opportunities. Reach out any time.</p>
+      <div class="signoff">
+        <div class="signoff__field">
+          <span class="label">Email</span><br>
+          <a href="mailto:youremail@mcmaster.ca">youremail@mcmaster.ca</a>
+        </div>
+        <div class="signoff__field">
+          <span class="label">LinkedIn</span><br>
+          <a href="https://linkedin.com/in/yourname" target="_blank" rel="noopener">linkedin.com/in/yourname</a>
+        </div>
+        <div class="signoff__field">
+          <span class="label">GitHub</span><br>
+          <a href="https://github.com/yourusername" target="_blank" rel="noopener">github.com/yourusername</a>
+        </div>
+        <div class="signoff__field">
+          <span class="label">Resume</span><br>
+          <a href="resume.pdf" target="_blank" rel="noopener">Download PDF</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p>Drawn up by Mehul · McMaster University · Rev. current</p>
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   CONTENT — edit everything in this block. No HTML/CSS
+   knowledge needed: change the text, add or remove array
+   entries, and the page updates itself.
+
+   TODO before publishing:
+   - Set your real email, LinkedIn, GitHub in the contact
+     links above (search for "yourname" / "yourusername" /
+     "youremail").
+   - Add resume.pdf next to this file, or remove that link.
+   - Fill in the [bracketed] notes in PROJECTS below.
+   ============================================================ */
+
+const SKILLS = [
+  { item:'01', name:'SolidWorks', cat:'Mechanical Design', note:'CSWA certification in progress' },
+  { item:'02', name:'AutoCAD / Autodesk Inventor', cat:'Mechanical Design', note:'' },
+  { item:'03', name:'Finite Element Analysis', cat:'Simulation', note:'Chassis and structural validation' },
+  { item:'04', name:'MATLAB', cat:'Numerical Methods', note:"Euler's & Heun's methods, BVPs, coupled ODE systems" },
+  { item:'05', name:'Arduino / C++', cat:'Embedded', note:'Sensors, motor control, shift registers' },
+  { item:'06', name:'PID Control', cat:'Controls', note:'Closed-loop motor control' },
+  { item:'07', name:'Python', cat:'Software', note:'Claude API, agentic tooling' },
+];
+
+const PROJECTS = [
+  {
+    dwg:'001',
+    title:'Autonomous Car — Chassis Redesign & Closed-Loop Control',
+    tags:['Mechanical Design','Controls','Embedded'],
+    status:'In progress',
+    summary:'Leveling up a working autonomous platform into a full design-cycle project: a SolidWorks chassis redesign, PID closed-loop control, and FEA validation.',
+    details:[
+      'Started from an Arduino-based autonomous car using ultrasonic sensors for obstacle sensing and motor control for drive.',
+      'Redesigning the chassis in SolidWorks to fix packaging and mounting issues from the original build.',
+      'Replacing the original open-loop motor logic with PID closed-loop control for steadier tracking.',
+      'Running FEA on the redesigned chassis to check it holds up under load before it gets built.',
+      'Debugged sensor logic ordering and timing issues that caused erratic obstacle response in the original build.'
+    ],
+    role:'Design, build, and code — solo project',
+    tools:'SolidWorks, Arduino/C++, FEA, ultrasonic sensors, DC motor control'
+  },
+  {
+    dwg:'002',
+    title:'3D-Printed Prosthetic Exo-Arm',
+    tags:['Mechanical Design'],
+    status:'Complete',
+    summary:'A 3D-printed exo-arm exploring mechanical linkages and fit for prosthetic assistance.',
+    details:[
+      'Designed and 3D-printed a prosthetic exo-arm as a hands-on mechanical design exercise.',
+      '[Add specifics: actuation method, materials, fit/adjustability, and what you would improve next time.]'
+    ],
+    role:'Design and fabrication',
+    tools:'CAD, 3D printing'
+  },
+  {
+    dwg:'003',
+    title:'Shift-Register LED Display',
+    tags:['Embedded'],
+    status:'Complete',
+    summary:'A chase-pattern LED display driven by a 74HC595 shift register — a fundamentals project in serial-to-parallel control and timing.',
+    details:[
+      'Built a chase LED pattern using a 74HC595 shift register to drive more outputs than the microcontroller had pins for.',
+      'Debugged logic-ordering and flickering issues caused by timing between the shift and latch signals.'
+    ],
+    role:'Design and build',
+    tools:'Arduino, 74HC595 shift register, LEDs'
+  },
+  {
+    dwg:'004',
+    title:'AI Agent Experiments',
+    tags:['Software'],
+    status:'Ongoing',
+    summary:'Exploring agentic systems built on the Claude API — a reusable LLM wrapper and a social-media marketing agent.',
+    details:[
+      'Built a reusable CustomLLM class on top of the Anthropic API.',
+      'Prototyped a social-media marketing agent using tool use and few-shot prompting.',
+      'Explored agentic loop architecture and retrieval-augmented generation (RAG).'
+    ],
+    role:'Solo, self-directed',
+    tools:'Claude API, Python, FastAPI, Chroma'
+  },
+];
+
+const EXPERIENCE = [
+  { rev:'A', desc:'High School Student Council President', date:'Secondary school', note:'Led council initiatives and represented the student body' },
+  { rev:'B', desc:'Summer Camp Counselor', date:'Summers', note:'Day-to-day group leadership and program management' },
+  { rev:'C', desc:'Applied to McMaster Aerospace Team (MAST)', date:'2026', note:'Targeting mechanical subteams for SAE Aero Design East' },
+  { rev:'D', desc:'CSWA Certification', date:'In progress', note:'SolidWorks Certified Associate' },
+];
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+
+function renderSkills(){
+  const body = document.getElementById('bomBody');
+  body.innerHTML = SKILLS.map(s => `
+    <tr>
+      <td class="item">${s.item}</td>
+      <td class="name">${s.name}</td>
+      <td class="cat">${s.cat}</td>
+      <td class="note">${s.note}</td>
+    </tr>
+  `).join('');
+}
+
+function renderExperience(){
+  const body = document.getElementById('revBody');
+  body.innerHTML = EXPERIENCE.map(e => `
+    <tr>
+      <td class="rev-id">${e.rev}</td>
+      <td>${e.desc}</td>
+      <td class="rev-date">${e.date}</td>
+      <td class="rev-note">${e.note}</td>
+    </tr>
+  `).join('');
+}
+
+let activeTag = 'All';
+
+function renderChips(){
+  const tags = ['All', ...new Set(PROJECTS.flatMap(p => p.tags))];
+  const chips = document.getElementById('chips');
+  chips.innerHTML = tags.map(t =>
+    `<button class="chip${t===activeTag ? ' is-active' : ''}" data-tag="${t}">${t}</button>`
+  ).join('');
+  chips.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTag = btn.dataset.tag;
+      renderChips();
+      renderProjects();
+    });
+  });
+}
+
+function renderProjects(){
+  const list = document.getElementById('projectList');
+  const filtered = activeTag === 'All' ? PROJECTS : PROJECTS.filter(p => p.tags.includes(activeTag));
+  list.innerHTML = filtered.map((p, i) => `
+    <article class="project" data-idx="${i}">
+      <div class="project__head" role="button" tabindex="0" aria-expanded="false">
+        <div>
+          <span class="project__id mono">DWG NO. ${p.dwg}</span>
+          <h3 class="project__title">${p.title}</h3>
+          <p class="project__summary">${p.summary}</p>
+          <div class="project__tags">
+            ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:14px;">
+          <span class="project__status">${p.status}</span>
+          <button class="project__toggle" aria-hidden="true">+</button>
+        </div>
+      </div>
+      <div class="project__body">
+        <div class="project__body-inner">
+          <div class="project__detail">
+            <ul>${p.details.map(d => `<li>${d}</li>`).join('')}</ul>
+            <div class="project__meta">
+              <div><span class="label">Role</span><span>${p.role}</span></div>
+              <div><span class="label">Tools</span><span>${p.tools}</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  `).join('');
+
+  list.querySelectorAll('.project__head').forEach(head => {
+    const toggle = () => {
+      const card = head.closest('.project');
+      const open = card.classList.toggle('is-open');
+      head.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    head.addEventListener('click', toggle);
+    head.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
+    });
+  });
+}
+
+function renderGearTeeth(){
+  const g = document.getElementById('teeth');
+  const cx = 160, cy = 160, count = 12;
+  let html = '';
+  for (let i = 0; i < count; i++){
+    const angle = (360 / count) * i;
+    const delay = (0.55 + i * 0.035).toFixed(3);
+    html += `<rect class="gear-tooth draw" style="--d:${delay}s" x="153" y="48" width="14" height="20" pathLength="100" transform="rotate(${angle} 160 160)"/>`;
+  }
+  g.innerHTML = html;
+}
+
+/* Scrollspy — drives both the top nav and the side zone ruler */
+function initScrollSpy(){
+  const sections = ['hero','about','skills','projects','experience','contact']
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+  const navLinks = document.querySelectorAll('.nav__link');
+  const zones = document.querySelectorAll('.ruler__zone');
+
+  const setActive = (id) => {
+    navLinks.forEach(l => l.classList.toggle('is-active', l.dataset.zone === id));
+    zones.forEach(z => z.classList.toggle('is-active', z.dataset.zone === id));
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) setActive(entry.target.id);
+    });
+  }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
+}
+
+function setSheetDate(){
+  const el = document.getElementById('sheetDate');
+  const today = new Date();
+  const opts = { year:'numeric', month:'short', day:'2-digit' };
+  el.textContent = today.toLocaleDateString('en-US', opts);
+}
+
+renderSkills();
+renderExperience();
+renderChips();
+renderProjects();
+renderGearTeeth();
+initScrollSpy();
+setSheetDate();
+</script>
+</body>
+</html>
