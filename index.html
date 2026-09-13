@@ -54,7 +54,8 @@
 
   /* ===== HERO ===== */
   .hero{ position:relative; min-height:100vh; overflow:hidden; padding:28px clamp(20px,5vw,64px); display:flex; flex-direction:column; }
-  .flow-bg{ position:absolute; inset:0; z-index:0; pointer-events:none; }
+  .flow-bg{ position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .flow-bg svg{ display:block; width:100%; height:100%; }
   .flow-bg path{ animation:drift 20s ease-in-out infinite; }
   .flow-bg path:nth-child(1){ animation-duration:19s; }
   .flow-bg path:nth-child(2){ animation-duration:23s; animation-delay:-4s; }
@@ -99,6 +100,10 @@
   .timeline__item:hover{ background:var(--bg-dim); }
   .timeline__item:hover::before{ background:var(--accent); }
   .timeline__when{ font-family:var(--font-mono); font-size:12px; color:var(--ink-faint); padding-top:2px; }
+  .timeline__row{ display:flex; align-items:center; gap:12px; }
+  .timeline__logo{ position:relative; width:38px; height:38px; border-radius:6px; background:var(--bg-dim); flex-shrink:0; overflow:hidden; }
+  .timeline__logo-fallback{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:13px; font-weight:600; color:var(--ink-faint); }
+  .timeline__logo img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; padding:5px; background:var(--bg-dim); }
   .timeline__main h3{ margin:0 0 4px; font-size:17px; font-weight:700; }
   .timeline__org{ margin:0; font-size:13px; color:var(--ink-soft); }
   .timeline__bullets{ list-style:none; margin:0; padding:0; }
@@ -117,8 +122,9 @@
   .carousel{ display:flex; align-items:center; gap:6px; }
   .carousel__nav{ flex-shrink:0; width:36px; height:36px; border:1px solid var(--rule-strong); background:none; color:var(--ink); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:border-color .2s ease, color .2s ease; }
   .carousel__nav:hover{ border-color:var(--accent); color:var(--accent); }
-  .carousel__viewport{ position:relative; flex:1; min-width:0; min-height:340px; perspective:1200px; transition:height .35s ease; }
+  .carousel__viewport{ position:relative; flex:1; min-width:0; perspective:1200px; }
   .carousel__viewport .proj-card{ position:absolute; top:0; left:50%; width:min(480px,88vw); border:1px solid var(--rule-strong); background:var(--card-bg); transition:transform .45s cubic-bezier(.2,.7,.3,1), opacity .35s ease; }
+  .carousel__viewport .proj-card.is-centered{ position:relative; left:auto; margin:0 auto; }
   .proj-card__visual{ aspect-ratio:16/10; background:var(--bg-dim); display:flex; align-items:center; justify-content:center; }
   .proj-card__visual svg{ width:34%; height:34%; color:var(--ink-faint); }
   .proj-card__head{ padding:20px 22px; cursor:pointer; }
@@ -189,11 +195,11 @@
 <body>
 
 <section class="hero" id="hero">
-  <svg class="flow-bg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
-    <path d="M -50 700 C 250 640, 500 760, 750 680 C 1000 600, 1200 720, 1450 660" stroke="var(--flow)" stroke-width="2" fill="none"/>
-    <path d="M -50 760 C 280 710, 520 800, 780 740 C 1020 680, 1220 770, 1450 720" stroke="var(--flow-2)" stroke-width="2" fill="none"/>
-    <path d="M -50 650 C 220 590, 480 700, 740 630 C 990 560, 1180 660, 1450 610" stroke="var(--flow)" stroke-width="1.5" fill="none"/>
-    <path d="M -50 820 C 300 780, 540 860, 800 810 C 1030 770, 1240 840, 1450 800" stroke="var(--flow-2)" stroke-width="1.5" fill="none"/>
+  <svg class="flow-bg" viewBox="0 0 100 100" preserveAspectRatio="none" width="100%" height="100%">
+    <path d="M -10 78 C 15 72, 35 84, 55 76 C 75 68, 90 80, 110 74" stroke="var(--flow)" stroke-width="0.25" fill="none" vector-effect="non-scaling-stroke"/>
+    <path d="M -10 84 C 18 79, 38 88, 58 82 C 78 76, 92 86, 110 80" stroke="var(--flow-2)" stroke-width="0.25" fill="none" vector-effect="non-scaling-stroke"/>
+    <path d="M -10 72 C 13 66, 33 78, 53 70 C 73 62, 88 74, 110 68" stroke="var(--flow)" stroke-width="0.2" fill="none" vector-effect="non-scaling-stroke"/>
+    <path d="M -10 90 C 20 86, 40 94, 60 89 C 78 85, 92 92, 110 88" stroke="var(--flow-2)" stroke-width="0.2" fill="none" vector-effect="non-scaling-stroke"/>
   </svg>
 
   <div class="topbar">
@@ -216,9 +222,9 @@
     <h1 class="hero__name">Mehul Sarin</h1>
     <p class="hero__bio">Second-year Mechanical Engineering student at McMaster University, focused on product design — with particular interest in motorsport and aerospace applications.</p>
     <div class="linkrow">
-      <a href="https://github.com/yourusername" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://linkedin.com/in/mehulsarin" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="mailto:youremail@mcmaster.ca">Email</a>
+      <a href="https://github.com/mehulsarin" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/mehulsarin/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:sarinm1@mcmaster.ca">Email</a>
     </div>
   </div>
 
@@ -316,16 +322,16 @@
     </div>
     <p style="max-width:48ch;">Open to co-op terms, undergrad research, and product design opportunities — always glad to hear from fellow engineers.</p>
     <div class="contact-grid">
-      <a class="contact-card" href="mailto:youremail@mcmaster.ca">
-        <div><span class="contact-card__label">Email</span><span class="contact-card__value">youremail@mcmaster.ca</span></div>
+      <a class="contact-card" href="mailto:sarinm1@mcmaster.ca">
+        <div><span class="contact-card__label">Email</span><span class="contact-card__value">sarinm1@mcmaster.ca</span></div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
       </a>
-      <a class="contact-card" href="https://linkedin.com/in/mehulsarin" target="_blank" rel="noopener">
+      <a class="contact-card" href="https://www.linkedin.com/in/mehulsarin/" target="_blank" rel="noopener">
         <div><span class="contact-card__label">LinkedIn</span><span class="contact-card__value">linkedin.com/in/mehulsarin</span></div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
       </a>
-      <a class="contact-card" href="https://github.com/yourusername" target="_blank" rel="noopener">
-        <div><span class="contact-card__label">GitHub</span><span class="contact-card__value">github.com/yourusername</span></div>
+      <a class="contact-card" href="https://github.com/mehulsarin" target="_blank" rel="noopener">
+        <div><span class="contact-card__label">GitHub</span><span class="contact-card__value">github.com/mehulsarin</span></div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
       </a>
       <a class="contact-card" href="resume.pdf" target="_blank" rel="noopener">
@@ -352,40 +358,40 @@ document.getElementById('themeBtn').addEventListener('click', () => {
    CONTENT
    ============================================================ */
 const EXPERIENCE = [
-  { when:'Jun 2022 – Sep 2022', title:'Summer Camp Counselor', org:'Miles Nadal JCC · Toronto, ON', bullets:[
-    'Led daily creative activities and swimming sessions for a group of campers each week.',
-    'Ensured camper safety and adherence to programming schedules throughout the summer.'
+  { when:'Fall 2026', title:'Teaching Assistant — BIOTECH 3CM3', org:'McMaster University, W Booth School', logo:'images/mcmaster.png', initial:'M', bullets:[
+    'Supporting course delivery for Computational Modeling of Biological Systems under Prof. Sesha Srinivasan.'
   ]},
-  { when:'Jul 2023 – Jun 2024', title:'Freelance Web Developer', org:'print & gift · Toronto, ON (hybrid)', bullets:[
-    'Built responsive, e-commerce-enabled websites for small businesses, including custom designs and online ordering.',
-    'Improved site performance and UX to increase product visibility and customer engagement.'
-  ]},
-  { when:'Oct 2025 – May 2026', title:'Concrete Canoe Construction Member', org:'McMaster Concrete Canoe Team · Hamilton, ON', bullets:[
-    'Attended technical workshops covering structural design, mix design, and casting techniques.',
-    'Supported quality control and hands-on fabrication, contributing to a 7th-place national finish.'
-  ]},
-  { when:'May 2026 – Aug 2026', title:'Manufacturing Engineering Intern', org:'Omazzii Printing · Mississauga, ON', bullets:[
+  { when:'May 2026 – Aug 2026', title:'Manufacturing Engineering Intern', org:'Omazzii Printing · Mississauga, ON', logo:'images/omazzii.png', initial:'O', bullets:[
     'Reduced production-line downtime ~12% and cut cycle time 32% through root-cause analysis across 3 printing lines.',
     'Designed and fabricated a custom SolidWorks transfer fixture to automate component handoff.'
   ]},
-  { when:'Fall 2026', title:'Teaching Assistant — BIOTECH 3CM3', org:'McMaster University, W Booth School', bullets:[
-    'Supporting course delivery for Computational Modeling of Biological Systems under Prof. Sesha Srinivasan.'
+  { when:'Oct 2025 – May 2026', title:'Concrete Canoe Construction Member', org:'McMaster Concrete Canoe Team · Hamilton, ON', logo:'images/concrete-canoe.png', initial:'C', bullets:[
+    'Attended technical workshops covering structural design, mix design, and casting techniques.',
+    'Supported quality control and hands-on fabrication, contributing to a 7th-place national finish.'
+  ]},
+  { when:'Jul 2023 – Jun 2024', title:'Freelance Web Developer', org:'print & gift · Toronto, ON (hybrid)', logo:'images/print-and-gift.png', initial:'P', bullets:[
+    'Built responsive, e-commerce-enabled websites for small businesses, including custom designs and online ordering.',
+    'Improved site performance and UX to increase product visibility and customer engagement.'
+  ]},
+  { when:'Jun 2022 – Sep 2022', title:'Summer Camp Counselor', org:'Miles Nadal JCC · Toronto, ON', logo:'images/jcc.png', initial:'J', bullets:[
+    'Led daily creative activities and swimming sessions for a group of campers each week.',
+    'Ensured camper safety and adherence to programming schedules throughout the summer.'
   ]},
 ];
 
-const PROJECT_CATEGORIES = ['All','Mechanical Design','Robotics','Manufacturing','Environmental','Embedded/Software','Web Dev','Automotive/Motorsport'];
+const PROJECT_CATEGORIES = ['All','Mechanical Design','Manufacturing','Embedded/Software','Sustainability'];
 
 const PROJECTS = [
   {
     emoji:'📦', title:'Robotic End Effector for Warehouse Automation', status:'Completed',
-    cats:['Robotics','Mechanical Design'],
+    cats:['Mechanical Design'],
     summary:'A versatile robotic end effector designed for warehouse automation tasks.',
     detail:'[Notion page linked but not publicly readable — add a fuller writeup here: gripping mechanism, actuation, what it picks up, and results.]',
     tools:['CAD','Mechanical Design']
   },
   {
     emoji:'💧', title:'Antibiotic Filter for Hospital Wastewater Runoff', status:'Completed',
-    cats:['Environmental','Mechanical Design'],
+    cats:['Sustainability','Mechanical Design'],
     summary:'A filtration system aimed at removing antibiotics from hospital wastewater before it re-enters the water supply.',
     detail:'[Notion page linked but not publicly readable — add filter media, testing method, and results here.]',
     tools:['CAD','Filtration Design']
@@ -420,7 +426,7 @@ const PROJECTS = [
   },
   {
     emoji:'🌐', title:'This Website', status:'Live',
-    cats:['Web Dev'],
+    cats:['Embedded/Software'],
     summary:'The very site you are looking at — built from scratch with plain HTML, CSS, and JavaScript.',
     detail:'Dynamic single-page portfolio with a project carousel, dark/light mode, and a few other interactive touches — no framework, no build step.',
     tools:['HTML','CSS','JavaScript']
@@ -445,7 +451,18 @@ function renderTimeline(){
   document.getElementById('timelineList').innerHTML = EXPERIENCE.map(e => `
     <div class="timeline__item">
       <div class="timeline__when">${e.when}</div>
-      <div class="timeline__main"><h3>${e.title}</h3><p class="timeline__org">${e.org}</p></div>
+      <div class="timeline__main">
+        <div class="timeline__row">
+          <div class="timeline__logo">
+            <span class="timeline__logo-fallback">${e.initial}</span>
+            <img src="${e.logo}" alt="" onerror="this.style.display='none'">
+          </div>
+          <div>
+            <h3>${e.title}</h3>
+            <p class="timeline__org">${e.org}</p>
+          </div>
+        </div>
+      </div>
       <ul class="timeline__bullets">${e.bullets.map(b => `<li>${b}</li>`).join('')}</ul>
     </div>
   `).join('');
@@ -522,7 +539,7 @@ function renderCarousel(){
     const isActive = raw === 0;
     let transform, opacity, z, pe;
     if (isActive){
-      transform = `translate(-50%,0) translateX(0px) scale(1) rotateY(0deg)`;
+      transform = `scale(1) rotateY(0deg)`;
       opacity = 1; z = 3; pe = 'auto';
     } else if (Math.abs(raw) === 1){
       transform = `translate(-50%,0) translateX(${raw*step}px) scale(.84) rotateY(${raw*-14}deg)`;
@@ -536,7 +553,7 @@ function renderCarousel(){
     const pills = p.tools.map((t, idx) => `<span class="tool-pill" style="background:${TAG_COLORS[idx % TAG_COLORS.length]}">${t}</span>`).join('');
 
     return `
-      <article class="proj-card${open ? ' is-open' : ''}" data-idx="${i}" style="transform:${transform}; opacity:${opacity}; z-index:${z}; pointer-events:${pe};">
+      <article class="proj-card${open ? ' is-open' : ''}${isActive ? ' is-centered' : ''}" data-idx="${i}" style="transform:${transform}; opacity:${opacity}; z-index:${z}; pointer-events:${pe};">
         <div class="proj-card__visual"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div>
         <div class="proj-card__head">
           <div class="proj-card__meta"><span>${p.emoji} ${p.cats[0]}</span><span class="proj-card__status">${p.status}</span></div>
@@ -565,7 +582,6 @@ function renderCarousel(){
   });
 
   renderDots(n);
-  requestAnimationFrame(syncViewportHeight);
 }
 
 function renderDots(n){
@@ -574,12 +590,6 @@ function renderDots(n){
     `<button class="carousel__dot${i === activeIndex ? ' is-active' : ''}" aria-label="Go to project ${i+1}"></button>`
   ).join('');
   dots.querySelectorAll('.carousel__dot').forEach((d, i) => d.addEventListener('click', () => setActive(i)));
-}
-
-function syncViewportHeight(){
-  const viewport = document.getElementById('carouselViewport');
-  const active = viewport.querySelector(`.proj-card[data-idx="${activeIndex}"]`);
-  if (active) viewport.style.height = active.offsetHeight + 'px';
 }
 
 function initCarouselControls(){
